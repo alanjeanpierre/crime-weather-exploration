@@ -24,3 +24,20 @@ def crime_from_disk():
     for file in files:
         df = df.append(pd.read_excel(file, parse_cols=cols))
     return df
+
+def get_violent_crime(df):
+    """Violent crime = assault, murder, rape, robbery
+    according to the FBI https://ucr.fbi.gov/crime-in-the-u.s/2010/crime-in-the-u.s.-2010/violent-crime"""
+    
+    # search terms
+    # there might be more abbreviations or things to search for
+    searchfor = ['ASSAULT', 'ASSLT', 'MURDER', 'RAPE', 'ROBBERY']
+    
+    # select offense descriptions and their codes
+    crimecodes = df[['OFFENSE-DESC', 'OFFENSE-CODE']].drop_duplicates()
+    
+    # select series of codes such that the description contains assault, murder, rape, robbery
+    codes = crimecodes.where(crimecodes['OFFENSE-DESC'].str.contains('|'.join(searchfor))).dropna()['OFFENSE-CODE']
+    
+    # return dataframe where only those offense codes are included
+    return df.where(df['OFFENSE-CODE'].isin(codes)).dropna(how='all')
