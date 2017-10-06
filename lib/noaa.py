@@ -19,7 +19,7 @@ def noaa_from_web():
         try:
             resp = ftp.retrbinary('RETR ' + url, r.write)
             r.seek(0)
-            df = df.append(pd.DataFrame(parseISD(r), columns=['Date', 'Temperature', 'Pressure', 'Humidity', 'RHPeriod']))
+            df = df.append(pd.DataFrame(parseISD(r), columns=['Date', 'Temperature', 'Pressure', 'Humidity', 'RHPeriod', 'Sky']))
         except ftplib.error_perm:
             continue
         except URLError:
@@ -43,7 +43,7 @@ def noaa_from_web_small():
         try:
             resp = ftp.retrbinary('RETR ' + url, r.write)
             r.seek(0)
-            df = df.append(pd.DataFrame(parseISD(r), columns=['Date', 'Temperature', 'Pressure', 'Humidity', 'RHPeriod']))
+            df = df.append(pd.DataFrame(parseISD(r), columns=['Date', 'Temperature', 'Pressure', 'Humidity', 'RHPeriod', 'Sky']))
         except ftplib.error_perm:
             continue
         except URLError:
@@ -210,13 +210,13 @@ def parseISD(data):
         dt = datetime.datetime.strptime(line[17:29], '%Y%m%d%H%M')
         temp = int(line[89:94])
         pressure = int(line[101:106])
-        skycond = ''
+        skycond = np.NaN
         try:
             index = line.index('GF1')
-            skycond = line[index + 3: index + 5]
+            skycond = int(line[index + 3: index + 5])
         except ValueError:
             pass
-
+        
         mean_rh = np.NaN
         mean_rh_hrs = np.NaN
         # only getting the mean humidity
@@ -229,13 +229,15 @@ def parseISD(data):
                     mean_rh = int(rh[4:])
             except ValueError:
                 pass
+        
                 
         dates.append(dt)
         temps.append(temp)
         pressures.append(pressure)
         rhs.append(mean_rh)
         rhhrs.append(mean_rh_hrs) 
+        skys.append(skycond)
         
-    return {'Date' : dates, 'Temperature' : temps, 'Pressure' : pressures, 'Humidity' : rhs, 'RHPeriod' : rhhrs}
+    return {'Date' : dates, 'Temperature' : temps, 'Pressure' : pressures, 'Humidity' : rhs, 'RHPeriod' : rhhrs, 'Sky':skys}
         
      
