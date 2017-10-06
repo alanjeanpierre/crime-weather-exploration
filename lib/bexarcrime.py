@@ -18,6 +18,20 @@ def crime_from_web():
             df = df.append(pd.read_excel(link['href'], parse_cols=cols))
     return df
     
+def crime_from_web_small():
+    """Returns DataFrame of bexar county criminal records, small"""
+    r = requests.get('http://gov.bexar.org/dc/dcrecords.html')
+    soup = BeautifulSoup(r.text, 'html.parser')
+
+    df = pd.DataFrame()
+    
+    links = soup.find_all('a')
+    for link in links:
+        if link['href'].endswith('.xls'):
+            df = df.append(pd.read_excel(link['href'], parse_cols=cols))
+            break
+    return df
+        
 def crime_from_disk():
     files = [f for f in os.listdir() if f.endswith('.xls')]
     df = pd.DataFrame()
