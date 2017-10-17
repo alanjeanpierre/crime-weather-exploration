@@ -4,11 +4,11 @@ from io import BytesIO
 from urllib.error import URLError
 import ftplib, gzip, datetime
 
-def noaa_from_web():
+def noaa_from_web(stationID='722530-12921'):
     """Returns DataFrame for 1901-2017 of ISD weather data"""
     baseURL = 'ftp.ncdc.noaa.gov'
     secondaryURL = '/pub/data/noaa/'
-    stationID = '722530-12921'
+    #stationID = '726980-24229' ## portland, OR
     df = pd.DataFrame()
     ftp = ftplib.FTP(baseURL)
     ftp.login()
@@ -28,11 +28,11 @@ def noaa_from_web():
     ftp.close()
     return df
     
-def noaa_from_web_small():   
+def noaa_from_web_small(stationID='722530-12921'):   
     """Returns DataFrame for 2016-2017"""
     baseURL = 'ftp.ncdc.noaa.gov'
     secondaryURL = '/pub/data/noaa/'
-    stationID = '722530-12921'
+    # stationID = '726980-24229' ## portland, OR
     df = pd.DataFrame()
     ftp = ftplib.FTP(baseURL)
     ftp.login()
