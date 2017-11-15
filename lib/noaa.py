@@ -209,11 +209,17 @@ def parseISD(data):
         line = str(line)
         dt = datetime.datetime.strptime(line[17:29], '%Y%m%d%H%M')
         temp = int(line[89:94])
+        if temp == 9999:
+            temp = np.NaN
         pressure = int(line[101:106])
+        if pressure == 99999:
+            pressure = np.NaN
         skycond = np.NaN
         try:
             index = line.index('GF1')
-            skycond = int(line[index + 3: index + 5])
+            tmpcond = int(line[index + 3: index + 5])
+            if tmpcond != 99:
+                skycond = tmpcond
         except ValueError:
             pass
         
