@@ -4,7 +4,7 @@ from io import BytesIO
 from urllib.error import URLError
 import ftplib, gzip, datetime
 
-def noaa_from_web(stationID='722530-12921'):
+def noaa_from_web(stationID='722530-12921', start=2016, end=2018):
     """Returns DataFrame for 1901-2017 of ISD weather data"""
     baseURL = 'ftp.ncdc.noaa.gov'
     secondaryURL = '/pub/data/noaa/'
@@ -13,7 +13,7 @@ def noaa_from_web(stationID='722530-12921'):
     ftp = ftplib.FTP(baseURL)
     ftp.login()
     
-    for year in range(1901, 2018):
+    for year in range(start, end):
         r = BytesIO()
         url = secondaryURL + str(year) + '/' + stationID + '-' + str(year) + '.gz'
         try:
@@ -26,6 +26,7 @@ def noaa_from_web(stationID='722530-12921'):
             continue
         
     ftp.close()
+    df = df.set_index('Date')
     return df
     
 def noaa_from_web_small(stationID='722530-12921'):   
@@ -50,6 +51,7 @@ def noaa_from_web_small(stationID='722530-12921'):
             continue
         
     ftp.close()
+    df = df.set_index('Date')
     return df
    
 def parseISD(data):
